@@ -25,6 +25,13 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(resolve(__dirname, "../frontend/dist")));
 
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+  });
+  
+  app.listen(3000, () => {
+    console.log('Server on port 3000');
+  });
 
 io.on("connection", (socket) => {
   console.log(socket.id);
