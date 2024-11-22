@@ -12,6 +12,16 @@ const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const server = http.createServer(app);
 
+const corsOptions = {
+  origin: ["https://musical-madeleine-be46cc.netlify.app"], // Replace with your Netlify domain
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true, // Allow cookies if needed
+};
+ 
+app.use(cors(corsOptions));
+
+
 // Configuración de Socket.IO con CORS habilitado
 const io = new SocketServer(server, {
   cors: {
@@ -23,7 +33,7 @@ const io = new SocketServer(server, {
 });
 
 // Middlewares
-app.use(cors());  // Habilitar CORS en Express
+app.use(cors(io));  // Habilitar CORS en Express
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
