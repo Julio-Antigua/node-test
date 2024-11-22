@@ -15,7 +15,7 @@ const server = http.createServer(app);
 // Configuración de Socket.IO con CORS habilitado
 const io = new SocketServer(server, {
   cors: {
-    origin: "http://localhost:5173",  // Permitir solo conexiones desde tu frontend
+    origin: ["http://localhost:5173", "https://musical-madeleine-be46cc.netlify.app"], // Permitir solo conexiones desde tu frontend
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
     credentials: true,  // Si utilizas cookies o autenticación basada en sesión
