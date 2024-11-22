@@ -17,6 +17,7 @@ const io = new SocketServer(server, {
   cors: {
     origin: [
       "http://localhost:5173",
+      "http://127.0.0.1:5173",
       "https://musical-madeleine-be46cc.netlify.app",
     ], // Permitir solo conexiones desde tu frontend
     methods: ["GET", "POST"],
