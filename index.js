@@ -12,36 +12,29 @@ const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const server = http.createServer(app);
 
-const corsOptions = {
-  origin: ["https://musical-madeleine-be46cc.netlify.app"], // Replace with your Netlify domain
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-  credentials: true, // Allow cookies if needed
-};
- 
-app.use(cors(corsOptions));
-
-
 // Configuración de Socket.IO con CORS habilitado
 const io = new SocketServer(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://musical-madeleine-be46cc.netlify.app"], // Permitir solo conexiones desde tu frontend
+    origin: [
+      "http://localhost:5173",
+      "https://musical-madeleine-be46cc.netlify.app",
+    ], // Permitir solo conexiones desde tu frontend
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
-    credentials: true,  // Si utilizas cookies o autenticación basada en sesión
+    credentials: true, // Si utilizas cookies o autenticación basada en sesión
   },
 });
 
 // Middlewares
-app.use(cors(io));  // Habilitar CORS en Express
+app.use(cors(io)); // Habilitar CORS en Express
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(resolve(__dirname, "../frontend/dist")));
 
 // Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
 });
 
 // Lista de usuarios conectados
@@ -49,7 +42,7 @@ let connectedUsers = [];
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-  
+
   // Agregar usuario a la lista
   connectedUsers.push(socket.id);
   // Emitir lista de usuarios conectados
@@ -59,7 +52,7 @@ io.on("connection", (socket) => {
   socket.on("message", (body) => {
     socket.broadcast.emit("message", {
       body,
-      from: socket.id.slice(8),  // Extrae un identificador simple del socket
+      from: socket.id.slice(8), // Extrae un identificador simple del socket
     });
   });
 
@@ -67,7 +60,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
     // Eliminar el usuario de la lista al desconectarse
-    connectedUsers = connectedUsers.filter(id => id !== socket.id);
+    connectedUsers = connectedUsers.filter((id) => id !== socket.id);
     // Emitir lista de usuarios actualizada
     io.emit("updateUserList", connectedUsers);
   });
