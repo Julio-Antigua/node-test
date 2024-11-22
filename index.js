@@ -25,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(resolve(__dirname, "../frontend/dist")));
 
+
 io.on("connection", (socket) => {
   console.log(socket.id);
   socket.on("message", (body) => {
