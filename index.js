@@ -4,7 +4,6 @@ import morgan from "morgan";
 import { Server as SocketServer } from "socket.io";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-
 import { PORT } from "./config.js";
 import cors from "cors";
 
@@ -35,8 +34,16 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
+// Lista de usuarios conectados
+let connectedUsers = [];
+
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
+  
+  // Agregar usuario a la lista
+  connectedUsers.push(socket.id);
+  // Emitir lista de usuarios conectados
+  io.emit("updateUserList", connectedUsers);
 
   // Manejar mensajes
   socket.on("message", (body) => {
@@ -49,6 +56,10 @@ io.on("connection", (socket) => {
   // Manejar desconexiones
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
+    // Eliminar el usuario de la lista al desconectarse
+    connectedUsers = connectedUsers.filter(id => id !== socket.id);
+    // Emitir lista de usuarios actualizada
+    io.emit("updateUserList", connectedUsers);
   });
 });
 
