@@ -12,33 +12,47 @@ import cors from "cors";
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const server = http.createServer(app);
+
+// Configuración de Socket.IO con CORS habilitado
 const io = new SocketServer(server, {
-  // cors: {
-  //   origin: "http://localhost:3000",
-  // },
+  cors: {
+    origin: "http://localhost:5173",  // Permitir solo conexiones desde tu frontend
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,  // Si utilizas cookies o autenticación basada en sesión
+  },
 });
 
 // Middlewares
-app.use(cors());
+app.use(cors());  // Habilitar CORS en Express
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(resolve(__dirname, "../frontend/dist")));
 
+// Ruta de prueba
 app.get('/', (req, res) => {
-    res.send('Hello, World!');
-  });
-  
+  res.send('Hello, World!');
+});
 
 io.on("connection", (socket) => {
-  console.log(socket.id);
+  console.log(`User connected: ${socket.id}`);
+
+  // Manejar mensajes
   socket.on("message", (body) => {
     socket.broadcast.emit("message", {
       body,
-      from: socket.id.slice(8),
+      from: socket.id.slice(8),  // Extrae un identificador simple del socket
     });
+  });
+
+  // Manejar desconexiones
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-server.listen(PORT);
-console.log(`server on port ${PORT}`);
+// Arrancar servidor
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
